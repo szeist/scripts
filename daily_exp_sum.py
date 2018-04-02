@@ -40,4 +40,4 @@ if __name__ == '__main__':
     CURRENT_SUMS = get_current_partial_sums()
     plt.style.use('dark_background')
     plot_partial_sums(CURRENT_SUMS)
-    plt.savefig(sys.stdout, dpi=250, bbox_inches='tight')
+    plt.savefig(sys.stdout, dpi=210, bbox_inches='tight')
