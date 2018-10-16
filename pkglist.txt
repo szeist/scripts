@@ -1,1 +1,1 @@
-python-tk
+python-tk python3-setuptools python3-pyqt5 python3-pip libsecp256k1-0 python3-pyqt5
