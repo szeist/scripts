@@ -15,8 +15,8 @@ sudo apt -y autoremove
 
 R e --no-save --no-restore -e 'update.packages(ask = FALSE, lib = "~/R/x86_64-pc-linux-gnu-library")'
 
-pip freeze --user| grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip install -U --user
-pip3 freeze --user | grep -v '^\-e' | cut -d = -f 1  | xargs -n1 pip3 install -U --user
+pip freeze --user | cut -d = -f 1  | xargs -n1 pip install -U --user
+pip3 freeze --user | cut -d = -f 1  | xargs -n1 pip3 install -U --user
 
 nvim -c VundleUpdate -c quitall
 
