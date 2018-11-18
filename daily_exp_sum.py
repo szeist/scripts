@@ -23,21 +23,25 @@ def date_polynom(idx, date):
 def date_polynom_exponential(idx, date):
     return np.exp(2 * np.pi * 1j * date_polynom(idx, date))
 
-def get_current_partial_sums():
-    now = datetime.now().date()
-    exponentials = np.array([date_polynom_exponential(n, now) for n in range(3, POINTS + 3)])
+def get_current_partial_sums(date):
+    exponentials = np.array([date_polynom_exponential(n, date) for n in range(3, POINTS + 3)])
     return exponentials.cumsum()
 
-def plot_partial_sums(partial_sums):
-    figure = plt.figure()
-    axes = figure.add_subplot(111)
+def plot_partial_sums(fig, partial_sums):
+    axes = fig.add_subplot(111)
     axes.plot(partial_sums.real, partial_sums.imag, color=COLOR, linewidth=0.7)
     axes.set_aspect('auto')
     axes.axis('off')
 
+def get_plot_for_date(date):
+    fig = plt.figure()
+    current_sums = get_current_partial_sums(date)
+    plt.style.use('dark_background')
+    plot_partial_sums(fig, current_sums)
+    return plt
+
 
 if __name__ == '__main__':
-    CURRENT_SUMS = get_current_partial_sums()
-    plt.style.use('dark_background')
-    plot_partial_sums(CURRENT_SUMS)
+    NOW = datetime.now().date()
+    get_plot_for_date(NOW)
     plt.savefig(sys.stdout, dpi=210, bbox_inches='tight')
