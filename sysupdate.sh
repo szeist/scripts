@@ -61,10 +61,10 @@ function update_gems {
 
 function update_pip {
   cd ${DOTFILES_SRC}
-  pip install -U --user python2-requirements.txt 
-  pip3 install -U --user python3-requirements.txt
+  pip install -U --user -r python2-requirements.txt
+  pip3 install -U --user -r python3-requirements.txt
   cd ${SCRIPTS_SRC}
-  pip install -U --user requirements.txt 
+  pip install -U --user -r requirements.txt
   cd -
 }
 
