@@ -88,6 +88,24 @@ function update_anbox {
   sudo snap refresh --beta --devmode anbox
 }
 
+function update_kali_vm {
+  VBoxManage list runningvms | grep -q 'Kali Linux'
+  KALI_STATUS=$?
+  if [ $KALI_STATUS -ne 0 ]; then
+    VBoxManage startvm "Kali Linux" --type headless &
+    sleep 15;
+  fi
+  ssh root@$(VBoxManage guestproperty get "Kali Linux" /VirtualBox/GuestInfo/Net/0/V4/IP | cut -d" " -f2) <<EOF
+apt-get update
+apt-get -y upgrade
+apt-get dist-upgrade
+apt-get -y autoremove
+EOF
+  if [ $KALI_STATUS -ne 0 ]; then
+    VBoxManage controlvm "Kali Linux" poweroff;
+  fi
+}
+
 update_system
 update_snap
 update_anbox
@@ -99,4 +117,4 @@ update_nvim
 update_onedrive
 update_i3_gnome_pomodoro
 update_calibre
-
+update_kali_vm
