@@ -3,6 +3,7 @@
 SCRIPTS_SRC="$(dirname "${BASH_SOURCE[0]}")"
 DOTFILES_SRC="${HOME}/src/dotfiles"
 ONEDRIVE_SRC="${HOME}/src/onedrive"
+SCLACK_SRC="${HOME}/src/sclack"
 I3_GNOME_POMODORO_SRC="${HOME}/src/i3-gnome-pomodoro"
 
 function update_system {
@@ -106,6 +107,17 @@ EOF
   fi
 }
 
+function update_sclack {
+    cd ${SCLACK_SRC}
+    if [ $(git diff remotes/origin/HEAD | wc -l) -gt 0 ]; then
+        git reset --hard
+        git checkout master
+        git pull
+        pipenv install
+    fi
+    cd -
+}
+
 update_system
 update_snap
 update_anbox
@@ -118,3 +130,4 @@ update_onedrive
 update_i3_gnome_pomodoro
 update_calibre
 update_kali_vm
+update_sclack
