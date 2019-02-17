@@ -98,7 +98,7 @@ function update_kali_vm {
   ssh root@$(VBoxManage guestproperty get "Kali Linux" /VirtualBox/GuestInfo/Net/0/V4/IP | cut -d" " -f2) <<EOF
 apt-get update
 apt-get -y upgrade
-apt-get dist-upgrade
+apt-get -y dist-upgrade
 apt-get -y autoremove
 EOF
   if [ $KALI_STATUS -ne 0 ]; then
