@@ -1,3 +1,0 @@
-#!/bin/bash
-
-cd ~/src/sclack && pipenv run python ./app.py
