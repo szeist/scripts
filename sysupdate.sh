@@ -3,8 +3,6 @@
 SCRIPTS_SRC="$(dirname "${BASH_SOURCE[0]}")"
 DOTFILES_SRC="${HOME}/src/dotfiles"
 ONEDRIVE_SRC="${HOME}/src/onedrive"
-SCLACK_SRC="${HOME}/src/sclack"
-I3_GNOME_POMODORO_SRC="${HOME}/src/i3-gnome-pomodoro"
 
 function update_system {
   sudo apt update
@@ -44,14 +42,8 @@ function update_onedrive {
     cd -
 }
 
-function update_i3_gnome_pomodoro {
-    cd ${I3_GNOME_POMODORO_SRC}
-    if [ $(git diff remotes/origin/HEAD | wc -l) -gt 0 ]; then
-        git reset --hard
-        git checkout master
-        git pull
-        pip install --user --upgrade -r requirements.txt
-    fi
+function check_onedrive {
+   onedrive --display-sync-status
 }
 
 function update_gems {
@@ -94,7 +86,7 @@ function update_kali_vm {
   KALI_STATUS=$?
   if [ $KALI_STATUS -ne 0 ]; then
     VBoxManage startvm "Kali Linux" --type headless &
-    sleep 15;
+    sleep 5;
   fi
   ssh root@$(VBoxManage guestproperty get "Kali Linux" /VirtualBox/GuestInfo/Net/0/V4/IP | cut -d" " -f2) <<EOF
 apt-get update
@@ -107,16 +99,6 @@ EOF
   fi
 }
 
-function update_sclack {
-    cd ${SCLACK_SRC}
-    if [ $(git diff remotes/origin/HEAD | wc -l) -gt 0 ]; then
-        git reset --hard
-        git checkout master
-        git pull
-        pipenv install
-    fi
-    cd -
-}
 
 update_system
 update_snap
@@ -127,7 +109,7 @@ update_R
 update_stack
 update_nvim
 update_onedrive
-update_i3_gnome_pomodoro
 update_calibre
 update_kali_vm
-update_sclack
+
+check_onedrive
