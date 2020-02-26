@@ -2,7 +2,6 @@
 
 SCRIPTS_SRC="$(dirname "${BASH_SOURCE[0]}")"
 DOTFILES_SRC="${HOME}/src/dotfiles"
-ONEDRIVE_SRC="${HOME}/src/onedrive"
 
 function update_system {
   sudo apt update
@@ -24,26 +23,6 @@ function update_calibre {
   if [ $? -ne 0 ]; then
       sudo -v && wget -nv -O- https://download.calibre-ebook.com/linux-installer.py | sudo python -c "import sys; main=lambda:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main()";
   fi
-}
-
-function update_onedrive {
-    cd ${ONEDRIVE_SRC}
-    if [ $(git diff remotes/origin/HEAD | wc -l) -gt 0 ]; then
-        sudo make uninstall
-        git reset --hard
-        git checkout master
-        git pull
-        make -j$(getconf _NPROCESSORS_ONLN)
-        sudo make install
-        pkill onedrive
-        onedrive --synchronize --monitor &
-        less CHANGELOG.md
-    fi
-    cd -
-}
-
-function check_onedrive {
-   onedrive --display-sync-status
 }
 
 function update_gems {
@@ -77,39 +56,17 @@ function update_snap {
   sudo snap refresh
 }
 
-function update_anbox {
-  sudo snap refresh --beta --devmode anbox
-}
-
-function update_kali_vm {
-  VBoxManage list runningvms | grep -q 'Kali Linux'
-  KALI_STATUS=$?
-  if [ $KALI_STATUS -ne 0 ]; then
-    VBoxManage startvm "Kali Linux" --type headless &
-    sleep 5;
-  fi
-  ssh root@$(VBoxManage guestproperty get "Kali Linux" /VirtualBox/GuestInfo/Net/0/V4/IP | cut -d" " -f2) <<EOF
-apt-get update
-apt-get -y upgrade
-apt-get -y dist-upgrade
-apt-get -y autoremove
-EOF
-  if [ $KALI_STATUS -ne 0 ]; then
-    VBoxManage controlvm "Kali Linux" poweroff;
-  fi
+function update_go {
+  go get -u -v all
 }
 
 
 update_system
 update_snap
-update_anbox
 update_pip
 update_gems
 update_R
 update_stack
 update_nvim
-update_onedrive
 update_calibre
-update_kali_vm
-
-check_onedrive
+update_go
