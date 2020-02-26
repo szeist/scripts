@@ -6,7 +6,7 @@ HDMI_COUNT=$(xrandr -q | grep "^HDMI.* connected" | wc -l)
 xrandr --output HDMI-1 --off
 xrandr --output HDMI-2 --off
 xrandr --output DP-2-1 --off
-xrandr --output DP-2-2 --off;
+xrandr --output DP-2-2 --off
 
 if [ $DISPLAYPORT_COUNT -eq 2 ]; then
     xrandr --output DP-2-1 --above eDP-1 --mode 1920x1080 -r 60
