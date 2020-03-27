@@ -60,6 +60,11 @@ function update_go {
   go get -u -v all
 }
 
+function update_kali {
+  cd "${SCRIPTS_SRC}/kali"
+  make update
+  cd -
+}
 
 update_system
 update_snap
@@ -70,3 +75,4 @@ update_stack
 update_nvim
 update_calibre
 update_go
+update_kali
