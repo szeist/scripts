@@ -44,4 +44,4 @@ def get_plot_for_date(date):
 if __name__ == '__main__':
     NOW = datetime.now().date()
     get_plot_for_date(NOW)
-    plt.savefig(sys.stdout, dpi=210, bbox_inches='tight')
+    plt.savefig(sys.stdout.buffer, dpi=210, bbox_inches='tight')
