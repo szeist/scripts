@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "eb5d192fbcf1901c4419a28b1e494682ad2d6629a9af73246bb2002bc2645ae7"
+            "sha256": "3fd61f015cfd896dfb830bda7cfee1a27f5c78194b34c4b6dbd835a1bedb1f53"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -126,12 +126,24 @@
             ],
             "version": "==2.8.1"
         },
+        "python-magic": {
+            "hashes": [
+                "sha256:f2674dcfad52ae6c49d4803fa027809540b130db1dec928cfbb9240316831375",
+                "sha256:f3765c0f582d2dfc72c15f3b5a82aecfae9498bd29ca840d72f37d7bd38bfcd5"
+            ],
+            "index": "pypi",
+            "version": "==0.4.15"
+        },
         "six": {
             "hashes": [
                 "sha256:236bdbdce46e6e6a3d61a337c0f8b763ca1e8717c03b369e87a7ec7ce1319c0a",
                 "sha256:8f3cd2e254d8f793e7f3d6d9df77b92252b52637291d0f0da013c76ea2724b6c"
             ],
             "version": "==1.14.0"
+        },
+        "synology-api": {
+            "git": "https://github.com/N4S4/synology-api",
+            "ref": "9f146a9e011e4621257a7ba560d6cd510ef365da"
         }
     },
     "develop": {}

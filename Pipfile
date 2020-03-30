@@ -8,6 +8,8 @@ verify_ssl = true
 [packages]
 numpy = "*"
 matplotlib = "*"
+synology-api = {git = "https://github.com/N4S4/synology-api"}
+python-magic = "*"
 
 [requires]
 python_version = "3.6"
