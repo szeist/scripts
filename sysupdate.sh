@@ -66,6 +66,15 @@ function update_kali {
   cd -
 }
 
+function update_k9s {
+  LATEST_VERSION=$(curl --silent 'https://api.github.com/repos/derailed/k9s/releases/latest' | jq -r .tag_name)
+  CURRENT_VERSION=$(k9s version -s | grep Version | awk '{print "v"$2}')
+  if [ "${LATEST_VERSION}" != "${CURRENT_VERSION}" ]; then
+    DOWNLOAD_URL=$(curl --silent 'https://api.github.com/repos/derailed/k9s/releases/latest' | jq -r '.assets[] | select(.name == "k9s_Linux_x86_64.tar.gz").browser_download_url')
+    curl -L "${DOWNLOAD_URL}" | tar xzvf - -C "$(dirname $(which k9s))" k9s;
+  fi
+}
+
 update_system
 update_snap
 update_pip
@@ -74,5 +83,6 @@ update_R
 update_stack
 update_nvim
 update_calibre
-update_go
 update_kali
+update_k9s
+update_go
