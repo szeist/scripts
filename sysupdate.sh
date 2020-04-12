@@ -25,18 +25,17 @@ function update_calibre {
   fi
 }
 
-function update_gems {
+function update_dotfiles_dependencies {
   cd ${DOTFILES_SRC}
+  pip install -U --user -r python2-requirements.txt
+  pip3 install -U --user -r python3-requirements.txt
   bundle update
   cd -
 }
 
-function update_pip {
-  cd ${DOTFILES_SRC}
-  pip install -U --user -r python2-requirements.txt
-  pip3 install -U --user -r python3-requirements.txt
+function update_script_dependencies {
   cd ${SCRIPTS_SRC}
-  pip install -U --user -r requirements.txt
+  pipenv update
   cd -
 }
 
@@ -77,8 +76,8 @@ function update_k9s {
 
 update_system
 update_snap
-update_pip
-update_gems
+update_dotfiles_dependencies
+update_script_dependencies
 update_R
 update_stack
 update_nvim
