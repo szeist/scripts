@@ -2,6 +2,7 @@
 
 SCRIPTS_SRC="$(dirname "${BASH_SOURCE[0]}")"
 DOTFILES_SRC="${HOME}/src/dotfiles"
+MINIKUBE_PATH="/usr/local/bin/minikube"
 
 function update_system {
   sudo apt update
@@ -74,6 +75,13 @@ function update_k9s {
   fi
 }
 
+function update_minikube {
+  UNIQUE_VERSION_COUNT=$(minikube update-check | sed -e 's/^.*: v//' | sort -u | wc -l)
+  if [ "${UNIQUE_VERSION_COUNT}" -ne 1 ]; then
+    sudo curl -Lo $MINIKUBE_PATH https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && sudo chmod +x $MINIKUBE_PATH
+  fi
+}
+
 update_system
 update_snap
 update_dotfiles_dependencies
@@ -84,4 +92,5 @@ update_nvim
 update_calibre
 update_kali
 update_k9s
+update_minikube
 update_go
