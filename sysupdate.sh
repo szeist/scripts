@@ -4,6 +4,14 @@ SCRIPTS_SRC="$(dirname "${BASH_SOURCE[0]}")"
 DOTFILES_SRC="${HOME}/src/dotfiles"
 MINIKUBE_PATH="/usr/local/bin/minikube"
 
+function notify {
+  script_name="$(basename "$0")"
+  message="${1}"
+  urgency="${2:-low}"
+
+  notify-send "${script_name}" "${message}" -u "${urgency}"
+}
+
 function update_system {
   sudo apt update
   sudo apt -y upgrade
@@ -56,10 +64,6 @@ function update_snap {
   sudo snap refresh
 }
 
-function update_go {
-  go get -u -v all
-}
-
 function update_kali {
   cd "${SCRIPTS_SRC}/kali"
   make update
@@ -82,10 +86,15 @@ function update_minikube {
   fi
 }
 
+function async_update_go {
+  go get -u -v all || nofify "update_go finished" || nofify "update_go failed" "critical" 
+}
+
 update_system
 update_snap
 update_dotfiles_dependencies
 update_script_dependencies
+async_update_go
 update_R
 update_stack
 update_nvim
@@ -93,4 +102,3 @@ update_calibre
 update_kali
 update_k9s
 update_minikube
-update_go
