@@ -6,7 +6,7 @@ source "${SCRIPT_DIR}/.env"
 
 MOUNT_POINT=/mnt/NAS
 
-if [ $1 == "-u" ]; then
+if [ "$1" == "-u" ]; then
   sudo umount ${MOUNT_POINT};
 else
   [ -d ${MOUNT_POINT} ] || sudo mkdir -p ${MOUNT_POINT}
