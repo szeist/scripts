@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env pipenv-shebang
 """
 Generates an image to the stdout with the sequence of partial sums
 of an exponential sum based on the current date, plotted in the complex plane.
