@@ -1,29 +1,39 @@
 #!/bin/bash
 
-DISPLAYPORT_COUNT=$(xrandr -q | grep "^DP.* connected" | wc -l)
-HDMI_COUNT=$(xrandr -q | grep "^HDMI.* connected" | wc -l)
+PRIMARY_DISPLAY='eDP1'
+FOUND_DISPLAYS=$(xrandr -q | grep '\(dis\)\?connected' | cut -d' ' -f1,2)
 LID_OPEN=$(cat /proc/acpi/button/lid/LID/state | grep open | wc -l)
 
 declare -A DISPLAYS 
-DISPLAYS[eDP-1]='--mode 1920x1080 -r 60'
-DISPLAYS[HDMI-1]='--off'
-DISPLAYS[HDMI-2]='--off'
-DISPLAYS[DP-1]='--off'
-DISPLAYS[DP-2-1]='--off'
-DISPLAYS[DP-2-2]='--off'
 
-if [ $LID_OPEN -eq 0 ]; then
-    DISPLAYS[eDP-1]='--off'
-fi
+while IFS= read -r line; do
+  read display connection <<< $line
 
-if [ $DISPLAYPORT_COUNT -eq 2 ]; then
-    DISPLAYS[DP-2-2]='--right-of eDP-1 --mode 1920x1080 -r 60'
-    DISPLAYS[DP-2-1]='--right-of DP-2-2 --mode 1920x1080 -r 60'
-elif [ $DISPLAYPORT_COUNT -eq 1 ]; then
-    DISPLAYS[DP-1]='--left-of eDP-1 --mode 3440x1440 -r 100'
-elif [ $HDMI_COUNT -eq 1 ]; then
-    DISPLAYS[HDMI-2]='--left-of eDP-1 --auto'
-fi
+  if [ "${connection}" == 'disconnected' ]; then
+    DISPLAYS[$display]='--off'
+    continue
+  fi
+
+  case $display in
+    'eDP1'|'eDP-1')
+      PRIMARY_DISPLAY=$display
+      if [ $LID_OPEN -eq 0 ]; then
+          DISPLAYS[$display]='--off'
+      else
+          DISPLAYS[$display]='--auto'
+      fi
+    ;;
+  'DP-1'|'DP1-3')
+    DISPLAYS[$display]="--left-of ${PRIMARY_DISPLAY} --mode 3440x1440 -r 100"
+    ;;
+  'HDMI*')
+    DISPLAYS[$display]="--left-of ${PRIMARY_DISPLAY} --auto"
+    ;;
+  *)
+    DISPLAYS[$display]='--off'
+    ;;
+  esac;
+done <<< $FOUND_DISPLAYS
 
 command='xrandr'
 for display in ${!DISPLAYS[@]}; do
