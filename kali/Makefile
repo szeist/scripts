@@ -1,10 +1,10 @@
-KALI_IMAGE=kali
-UPDATE_IMAGE=kali-update
+KALI_IMAGE=szeist-kali
+UPDATE_IMAGE=szeist-kali-update
 
 UPDATE_COMMAND=apt-get -y update; apt-get -y upgrade; apt-get -y dist-upgrade; apt-get -y autoremove
 
 build:
-	docker build -t $(KALI_IMAGE) .
+	docker build --no-cache -t $(KALI_IMAGE) .
 
 update:
 	docker rm -f $(UPDATE_IMAGE) || true
