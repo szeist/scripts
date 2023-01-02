@@ -2,7 +2,7 @@
 
 SCRIPTS_SRC="$(dirname "${BASH_SOURCE[0]}")"
 DOTFILES_SRC="${HOME}/src/dotfiles"
-MINIKUBE_PATH="/usr/local/bin/minikube"
+ARTISAN_SRC="${HOME}/src/artisan"
 
 function notify {
   script_name="$(basename "$0")"
@@ -13,61 +13,49 @@ function notify {
 }
 
 function update_system {
-  sudo apt update
-  sudo apt -y upgrade
-  sudo apt dist-upgrade
-  sudo apt -y autoremove
-}
-
-function check_new_calibre_version {
-    calibre-debug -c "\
-from calibre.gui2.update import get_newest_version;\
-from calibre.constants import numeric_version;\
-raise SystemExit(int(numeric_version < get_newest_version()))\
-"
-}
-
-function update_calibre {
-  check_new_calibre_version
-  if [ $? -ne 0 ]; then
-      sudo -v && wget -nv -O- https://download.calibre-ebook.com/linux-installer.py | sudo python -c "import sys; main=lambda:sys.stderr.write('Download failed\n'); exec(sys.stdin.read()); main()";
-  fi
+  os=$(hostnamectl status --json=short | jq -r '.OperatingSystemPrettyName')
+  case "$os" in
+    "Gentoo Linux")
+      update_gentoo
+      return $?
+      ;;
+    "Ubuntu/Linux")
+      update_ubuntu
+      return $?
+      ;;
+    *)
+      echo "Updating ${os} systems is not implemented" >&2
+      return 1
+    esac
 }
 
 function update_dotfiles_dependencies {
   cd ${DOTFILES_SRC}
-  pip install -U --user -r python2-requirements.txt
-  pip3 install -U --user -r python3-requirements.txt
-  bundle update
+  pip3 install -U --user -r requirements.txt
+  status=$?
   cd -
+  return $status
 }
 
 function update_script_dependencies {
   cd ${SCRIPTS_SRC}
   pipenv update
+  status=$?
   cd -
-}
-
-function update_R {
-  R e --no-save --no-restore -e 'update.packages(ask = FALSE, lib = "~/R/x86_64-pc-linux-gnu-library")'
+  return $status
 }
 
 function update_nvim {
   nvim -c VundleUpdate -c quitall
-}
-
-function update_stack {
-  stack upgrade --binary-only
-}
-
-function update_snap {
-  sudo snap refresh
+  return $?
 }
 
 function update_kali {
   cd "${SCRIPTS_SRC}/kali"
   make update
+  status=$?
   cd -
+  return $status
 }
 
 function update_k9s {
@@ -76,29 +64,70 @@ function update_k9s {
   if [ "${LATEST_VERSION}" != "${CURRENT_VERSION}" ]; then
     DOWNLOAD_URL=$(curl --silent 'https://api.github.com/repos/derailed/k9s/releases/latest' | jq -r '.assets[] | select(.name == "k9s_Linux_x86_64.tar.gz").browser_download_url')
     curl -L "${DOWNLOAD_URL}" | tar xzvf - -C "$(dirname $(which k9s))" k9s;
+    return $?
   fi
+  return 0
 }
 
-function update_minikube {
-  UNIQUE_VERSION_COUNT=$(minikube update-check | sed -e 's/^.*: v//' | sort -u | wc -l)
-  if [ "${UNIQUE_VERSION_COUNT}" -ne 1 ]; then
-    sudo curl -Lo $MINIKUBE_PATH https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && sudo chmod +x $MINIKUBE_PATH
-  fi
+function update_artisan {
+  cd "${ARTISAN_SRC}"
+  make build-latest
 }
 
-function async_update_go {
-  go get -u -v all || nofify "update_go finished" || nofify "update_go failed" "critical" 
+function update_ubuntu {
+  sudo apt update && \
+  sudo apt -y upgrade && \
+  sudo apt dist-upgrade && \
+  sudo apt -y autoremove
+  return $?
 }
 
-update_system
-update_snap
-update_dotfiles_dependencies
-update_script_dependencies
-async_update_go
-update_R
-update_stack
-update_nvim
-update_calibre
-update_kali
-update_k9s
-update_minikube
+function update_gentoo {
+  sudo emerge --sync && \
+  sudo emerge -uaDvN --with-bdeps=y world && \
+  sudo emerge --depclean
+  return $?
+}
+
+function update_all {
+  update_system || notify "System update failed" "critical"
+  update_dotfiles_dependencies || notify "dotfiles update failed" "critical"
+  update_script_dependencies || notify "scripts update failed" "critical"
+  update_nvim || notify "neovim update failed" "critical"
+  update_kali || notify "kali update failed" "critical"
+  update_k9s || notify "k9s update failed" "critical"
+  update_artisan || notify "artisan update failed" "critical"
+  notify "System update finished"
+}
+
+COMMAND="${1-all}"
+
+case "update_${COMMAND}" in
+  "update_all")
+    update_all
+    ;;
+  "update_system")
+    update_system
+    ;;
+  "update_dotfiles_dependencies")
+    update_dotfiles_dependencies
+    ;;
+  "update_script_dependencies")
+    update_script_dependencies
+    ;;
+  "update_nvim")
+    update_nvim
+    ;;
+  "update_kali")
+    update_kali
+    ;;
+  "update_k9s")
+    update_k9s
+    ;;
+  "update_artisan")
+    update_artisan
+    ;;
+  *)
+    echo "${COMMAND} is not implemented"
+    exit 1
+esac
