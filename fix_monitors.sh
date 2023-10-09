@@ -23,8 +23,11 @@ while IFS= read -r line; do
           DISPLAYS[$display]='--auto'
       fi
     ;;
-  'DP-1'|'DP1-3')
-    DISPLAYS[$display]="--left-of ${PRIMARY_DISPLAY} --mode 3440x1440 -r 100"
+  'DP-2')
+    DISPLAYS[$display]="--above ${PRIMARY_DISPLAY} --auto"
+    ;;
+  'DP-1'|'DP-2-3')
+    DISPLAYS[$display]="--above ${PRIMARY_DISPLAY} --mode 3440x1440 -r 100"
     ;;
   'HDMI*')
     DISPLAYS[$display]="--left-of ${PRIMARY_DISPLAY} --auto"
