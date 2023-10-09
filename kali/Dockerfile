@@ -6,7 +6,7 @@ RUN apt-get -y update && \
   apt-get -y upgrade && \
   apt-get -y dist-upgrade
 
-RUN apt-get install -y kali-tools-top10
+RUN apt-get install -y kali-tools-top10 crunch
 
 WORKDIR /app
 
