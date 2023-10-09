@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BT_HEADSET_MAC="AC:12:2F:9D:5C:5B"
+BT_HEADSET_MAC="FC:58:FA:7E:57:44"
 
 SINK="${1}"
 BTUSB_LOADED=$(cat /proc/modules | grep -c btusb)
