@@ -46,7 +46,7 @@ function update_script_dependencies {
 }
 
 function update_nvim {
-  nvim -c VundleUpdate -c quitall
+  nvim -c PlugUpdate -c quitall
   return $?
 }
 
@@ -62,7 +62,7 @@ function update_k9s {
   LATEST_VERSION=$(curl --silent 'https://api.github.com/repos/derailed/k9s/releases/latest' | jq -r .tag_name)
   CURRENT_VERSION=$(k9s version -s | grep Version | awk '{print "v"$2}')
   if [ "${LATEST_VERSION}" != "${CURRENT_VERSION}" ]; then
-    DOWNLOAD_URL=$(curl --silent 'https://api.github.com/repos/derailed/k9s/releases/latest' | jq -r '.assets[] | select(.name == "k9s_Linux_x86_64.tar.gz").browser_download_url')
+    DOWNLOAD_URL=$(curl --silent 'https://api.github.com/repos/derailed/k9s/releases/latest' | jq -r '.assets[] | select(.name == "k9s_Linux_amd64.tar.gz").browser_download_url')
     curl -L "${DOWNLOAD_URL}" | tar xzvf - -C "$(dirname $(which k9s))" k9s;
     return $?
   fi
@@ -86,7 +86,18 @@ function update_gentoo {
   sudo emerge --sync && \
   sudo emerge -uaDvN --with-bdeps=y world && \
   sudo emerge --depclean
+  sudo eclean distfiles
+  sudo eclean packages
   return $?
+}
+
+function update_flutter {
+  flutter upgrade -f
+  return $?
+}
+
+function update_android_sdk {
+   $HOME/Android/Sdk/cmdline-tools/latest/bin/sdkmanager --update
 }
 
 function update_all {
@@ -97,6 +108,8 @@ function update_all {
   update_kali || notify "kali update failed" "critical"
   update_k9s || notify "k9s update failed" "critical"
   update_artisan || notify "artisan update failed" "critical"
+  update_android_sdk || notify "android sdk update failed" "critical"
+  update_flutter || notify "flutter update failed" "critical"
   notify "System update finished"
 }
 
@@ -126,6 +139,12 @@ case "update_${COMMAND}" in
     ;;
   "update_artisan")
     update_artisan
+    ;;
+  "update_android_sdk")
+    update_android_sdk
+    ;;
+  "update_flutter")
+    update_flutter
     ;;
   *)
     echo "${COMMAND} is not implemented"
