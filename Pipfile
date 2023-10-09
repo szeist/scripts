@@ -12,6 +12,3 @@ matplotlib = "*"
 synology-api = {git = "https://github.com/N4S4/synology-api"}
 python-magic = "*"
 kodijsonrpc = "*"
-
-[requires]
-python_version = "3.11"
