@@ -15,11 +15,11 @@ function notify {
 function update_system {
   os=$(hostnamectl status --json=short | jq -r '.OperatingSystemPrettyName')
   case "$os" in
-    "Gentoo Linux")
+    Gentoo*)
       update_gentoo
       return $?
       ;;
-    "Ubuntu/Linux")
+    Ubuntu*)
       update_ubuntu
       return $?
       ;;
